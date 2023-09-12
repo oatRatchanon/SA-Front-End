@@ -1,29 +1,27 @@
-import { Link } from "react-router-dom";
 import styled from "styled-components";
-import { Topic } from "../types";
+import { Comment } from "../types";
 import ReactTimeAgo from "react-time-ago";
 
-interface TopicCardProps {
-  topic: Topic;
+interface CommentCardProps {
+  comment: Comment;
 }
 
-function TopicCard({ topic }: TopicCardProps) {
+function CommentCard({ comment }: CommentCardProps) {
   return (
-    <StyledLink to={`/topics/${topic.id}`}>
-      <TopicText>{topic.description}</TopicText>
-      <DateText date={topic.createAt} />
-    </StyledLink>
+    <TopicCardContainer>
+      <CommentText>{comment.description}</CommentText>
+      <DateText date={comment.createAt} />
+    </TopicCardContainer>
   );
 }
 
-const StyledLink = styled(Link)`
+const TopicCardContainer = styled.div`
   text-decoration: none;
   color: #6b6b6b;
   font-size: 24px;
-  border-radius: 20px;
   background-color: #f2f2f2;
   padding: 1rem;
-  width: 20vw;
+  width: 100%;
   display: flex;
   flex-direction: column;
   flex-wrap: wrap;
@@ -31,7 +29,7 @@ const StyledLink = styled(Link)`
   box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
   transition-duration: 0.3s;
   &:hover {
-    transform: scale(1.03);
+    transform: scale(1.01);
   }
 `;
 
@@ -39,9 +37,9 @@ const DateText = styled(ReactTimeAgo)`
   font-size: 14px;
 `;
 
-const TopicText = styled.div`
+const CommentText = styled.div`
   color: black;
   font-size: 16px;
   font-weight: bold;
 `;
-export default TopicCard;
+export default CommentCard;

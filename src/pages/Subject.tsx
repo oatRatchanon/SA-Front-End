@@ -52,6 +52,7 @@ const HeaderContainer = styled.div`
   margin-bottom: 1rem;
   gap: 1.5rem;
   height: 160px;
+  font-weight: bold;
 `;
 
 const FileContainer = styled.div`

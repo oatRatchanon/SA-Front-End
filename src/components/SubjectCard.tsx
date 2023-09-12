@@ -29,9 +29,10 @@ const StyledLink = styled(Link)`
   flex-direction: column;
   flex-wrap: wrap;
   gap: 1rem;
-  transition-duration: 1s;
+  box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+  transition-duration: 0.3s;
   &:hover {
-    transform: scale(1.1);
+    transform: scale(1.03);
   }
 `;
 
