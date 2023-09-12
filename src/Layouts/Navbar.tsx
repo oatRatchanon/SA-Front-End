@@ -6,7 +6,7 @@ function Navbar() {
     <Nav>
       <FullNavContainer>
         <StyledLink to="/">CUTaskOverflow</StyledLink>
-        <div>Login</div>
+        <div style={{ fontWeight: "bold" }}>Login</div>
       </FullNavContainer>
     </Nav>
   );
@@ -25,12 +25,15 @@ const FullNavContainer = styled.div`
   display: flex;
   flex-flow: row;
   justify-content: space-between;
+  align-items: center;
   width: 100%;
 `;
 
 const StyledLink = styled(Link)`
   text-decoration: none;
   color: white;
+  font-size: 32px;
+  font-weight: bold;
 `;
 
 export default Navbar;

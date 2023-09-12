@@ -7,6 +7,10 @@ import { createBrowserRouter, Outlet, RouterProvider } from "react-router-dom";
 import Subject from "./pages/Subject.tsx";
 import Navbar from "./Layouts/Navbar.tsx";
 import Topic from "./pages/Topic.tsx";
+import TimeAgo from "javascript-time-ago";
+import en from "javascript-time-ago/locale/en.json";
+
+TimeAgo.addDefaultLocale(en);
 
 const router = createBrowserRouter([
   {

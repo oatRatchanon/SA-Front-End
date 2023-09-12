@@ -1,10 +1,10 @@
-import { useParams } from "react-router-dom";
+// import { useParams } from "react-router-dom";
 import { subjects } from "../subject";
 import styled from "styled-components";
 
 function Topic() {
-  const { topicId } = useParams();
-  const topic = subjects[Number(topicId) - 1].topics[0];
+  // const { topicId } = useParams();
+  const topic = subjects[0].topics[0];
 
   return (
     <TopicContainer>

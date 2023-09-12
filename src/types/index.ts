@@ -24,7 +24,7 @@ export type Topic = {
   comments: Comment[];
   TopicCreatorId: number;
   description: string;
-  createAt: string;
+  createAt: Date;
 };
 
 export type Comment = {
@@ -32,6 +32,6 @@ export type Comment = {
   subjectId: number;
   description: string;
   CommenterId: number;
-  createAt: string;
+  createAt: Date;
   topicId: number;
 };

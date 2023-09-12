@@ -21,15 +21,18 @@ const HomeHeader = styled.div`
   justify-content: center;
   align-items: center;
   outline: 1.5px solid #f2f2f2;
+  font-size: 40px;
+  font-weight: bold;
 `;
 
 const HomeContent = styled.div`
-  padding: 5vh 20vw;
+  padding: 5vh 0vw;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  flex-wrap: wrap;
   justify-content: center;
   align-items: center;
-  gap: 1rem;
+  gap: 1.5rem;
 `;
 
 export default App;
