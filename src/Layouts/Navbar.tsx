@@ -42,6 +42,11 @@ const LoginContainer = styled.div`
   border: 1px solid white;
   /* background-color: white; */
   padding: 0.5rem 1rem;
+  cursor: pointer;
+  /* transition-duration: 0.3s; */
+  &:hover {
+    border: 2px solid white;
+  }
 `;
 
 export default Navbar;
