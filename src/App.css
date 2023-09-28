@@ -1,0 +1,10 @@
+label {
+  font-size: 20px;
+}
+
+.FilterBox {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  font-weight: bold;
+}
