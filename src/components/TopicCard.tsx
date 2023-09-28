@@ -23,15 +23,18 @@ const StyledLink = styled(Link)`
   border-radius: 20px;
   background-color: #f2f2f2;
   padding: 1rem;
-  width: 20vw;
+  width: 30%;
+  height: 100px;
   display: flex;
   flex-direction: column;
   flex-wrap: wrap;
+  justify-content: center;
   gap: 1rem;
   box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
   transition-duration: 0.3s;
   &:hover {
     transform: scale(1.03);
+    border: 1px solid #6b6b6b;
   }
 `;
 
@@ -39,7 +42,7 @@ const DateText = styled(ReactTimeAgo)`
   font-size: 14px;
 `;
 
-const TopicText = styled.div`
+const TopicText = styled.span`
   color: black;
   font-size: 16px;
   font-weight: bold;

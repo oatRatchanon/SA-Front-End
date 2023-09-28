@@ -3,7 +3,7 @@ import { Subject } from "./types";
 export const subjects: Subject[] = [
   {
     id: 1,
-    name: "Software Engineer",
+    name: "Software Engineerssssssssssssssssssssssssssssssssssssssssssssssssssssssqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqs",
     year: 1,
     semester: 2,
     section: 21,
@@ -15,6 +15,31 @@ export const subjects: Subject[] = [
         id: 1,
         subjectId: 1,
         comments: [
+          {
+            id: 1,
+            subjectId: 1,
+            description:
+              "This is comment1 from topic about carqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwsssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss",
+            CommenterId: 1,
+            createAt: new Date(),
+            topicId: 1,
+          },
+          {
+            id: 1,
+            subjectId: 1,
+            description: "This is comment1 from topic about car",
+            CommenterId: 1,
+            createAt: new Date(),
+            topicId: 1,
+          },
+          {
+            id: 1,
+            subjectId: 1,
+            description: "This is comment1 from topic about car",
+            CommenterId: 1,
+            createAt: new Date(),
+            topicId: 1,
+          },
           {
             id: 1,
             subjectId: 1,
@@ -49,7 +74,8 @@ export const subjects: Subject[] = [
           },
         ],
         TopicCreatorId: 1,
-        description: "Topic about car",
+        description:
+          "Topic about carssssssssssssssssssssssssssssssssssssssssssssssssssssssqqqqqqqqqqqqqqqqqqqqqwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwss",
         createAt: new Date(),
       },
       {
@@ -70,7 +96,14 @@ export const subjects: Subject[] = [
         createAt: new Date(),
       },
     ],
-    files: [],
+    files: [
+      {
+        name: "File1sssssssssssssssssssssssssssssssssssssssssssssssssssssssssxxzxzxsdasd",
+        createAt: new Date(),
+      },
+      { name: "File2", createAt: new Date() },
+    ],
+    star: true,
   },
   {
     id: 2,
@@ -83,6 +116,7 @@ export const subjects: Subject[] = [
     prerequisites: [],
     topics: [],
     files: [],
+    star: true,
   },
   {
     id: 3,

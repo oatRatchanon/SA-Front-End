@@ -4,7 +4,7 @@ import SubjectCard from "./components/SubjectCard";
 
 function App() {
   return (
-    <>
+    <HomeContainer>
       <HomeHeader>
         <Text>Explore Subjects</Text>
       </HomeHeader>
@@ -13,18 +13,22 @@ function App() {
           return <SubjectCard key={index} subject={subject} />;
         })}
       </HomeContent>
-    </>
+    </HomeContainer>
   );
 }
 
+const HomeContainer = styled.div`
+  padding: 0rem 10rem;
+`;
+
 const HomeHeader = styled.div`
-  padding: 5vh 20vw;
   display: flex;
   justify-content: center;
   align-items: center;
-  outline: 1.5px solid #f2f2f2;
+  border-bottom: 1.5px solid #f2f2f2;
   font-size: 48px;
   font-weight: bold;
+  height: 200px;
 `;
 
 const Text = styled.span`
@@ -35,7 +39,7 @@ const Text = styled.span`
   overflow: hidden;
   border-right: 0.1em solid hsl(0, 0%, 80%);
   white-space: nowrap;
-  animation: typing 2s steps(21, end),
+  animation: typing 1.5s steps(21, end),
     blink-caret 0.5s step-end infinite alternate;
 
   @keyframes typing {

@@ -9,6 +9,7 @@ export type Subject = {
   prerequisites: Subject[];
   topics: Topic[];
   files: File[];
+  star?: boolean;
 };
 
 export type Instructor = {
@@ -34,4 +35,9 @@ export type Comment = {
   CommenterId: number;
   createAt: Date;
   topicId: number;
+};
+
+export type File = {
+  name: string;
+  createAt: Date;
 };

@@ -15,7 +15,7 @@ function Navbar() {
 const Nav = styled.div`
   background-color: #2a2d48 !important;
   color: white;
-  padding: 2vh 3vw !important;
+  padding: 2vh 10vw !important;
   position: sticky;
   top: 0;
   z-index: 1;

@@ -28,16 +28,14 @@ const TopicCardContainer = styled.div`
   gap: 1rem;
   box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
   transition-duration: 0.3s;
-  &:hover {
-    transform: scale(1.01);
-  }
+  margin-top: 1.5rem;
 `;
 
 const DateText = styled(ReactTimeAgo)`
   font-size: 14px;
 `;
 
-const CommentText = styled.div`
+const CommentText = styled.span`
   color: black;
   font-size: 16px;
   font-weight: bold;
