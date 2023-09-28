@@ -8,3 +8,9 @@ label {
   align-items: center;
   font-weight: bold;
 }
+
+select,
+input {
+  padding: 0.8rem;
+  border-radius: 15px;
+}

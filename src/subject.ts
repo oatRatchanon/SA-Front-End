@@ -114,7 +114,16 @@ export const subjects: Subject[] = [
     instructors: [],
     description: "string",
     prerequisites: [],
-    topics: [],
+    topics: [
+      {
+        id: 2,
+        subjectId: 1,
+        comments: [],
+        TopicCreatorId: 1,
+        description: "Last Book in this subject ?",
+        createAt: new Date(),
+      },
+    ],
     files: [],
     star: true,
   },

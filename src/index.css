@@ -30,8 +30,11 @@ h1 {
   }
 }
 
-select,
-input {
-  padding: 0.8rem;
-  border-radius: 15px;
+.noData {
+  height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  font-weight: bold;
 }

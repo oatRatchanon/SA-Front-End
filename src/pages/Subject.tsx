@@ -114,16 +114,23 @@ function Subject() {
             </StyledHeader>
             <Button>
               <FileUploadIcon />
-              <label htmlFor="file" style={{ cursor: "pointer" }}>
+              <label
+                htmlFor="file"
+                style={{ cursor: "pointer", fontSize: "16px" }}
+              >
                 Upload File
               </label>
               <FileInput type="file" id="file" onChange={handleFileSubmit} />
             </Button>
           </FileHeader>
           <FileContent>
-            {files?.map((file, index) => {
-              return <FileCard key={index} file={file} />;
-            })}
+            {files.length > 0 ? (
+              files?.map((file, index) => {
+                return <FileCard key={index} file={file} />;
+              })
+            ) : (
+              <div className="noData">No Data</div>
+            )}
           </FileContent>
         </FileContainer>
         <TopicContainer>
@@ -170,9 +177,13 @@ function Subject() {
             </Modal>
           </TopicHeader>
           <TopicContent>
-            {topics.map((topic, index) => {
-              return <TopicCard key={index} topic={topic} />;
-            })}
+            {topics.length > 0 ? (
+              topics.map((topic, index) => {
+                return <TopicCard key={index} topic={topic} />;
+              })
+            ) : (
+              <div className="noData">No Data</div>
+            )}
           </TopicContent>
         </TopicContainer>
       </CenterContainer>

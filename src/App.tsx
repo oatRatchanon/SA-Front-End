@@ -64,7 +64,7 @@ function App() {
       <HomeFilter>
         <div className="FilterBox">
           <label>Subject</label>
-          <SearchInput
+          <input
             type="search"
             placeholder="--Subject Name--"
             name="name"
@@ -107,9 +107,13 @@ function App() {
         <Reset onClick={handleReset}>Reset</Reset>
       </HomeFilter>
       <HomeContent>
-        {subject.map((subject, index) => {
-          return <SubjectCard key={index} subject={subject} />;
-        })}
+        {subject.length > 0 ? (
+          subject.map((subject, index) => {
+            return <SubjectCard key={index} subject={subject} />;
+          })
+        ) : (
+          <div className="noData">No Data</div>
+        )}
       </HomeContent>
     </HomeContainer>
   );
@@ -133,12 +137,6 @@ const HomeFilter = styled.div`
   flex-wrap: wrap;
 `;
 
-const SearchInput = styled.input`
-  padding: 0.8rem;
-  border-radius: 15px;
-  /* width: 500px; */
-`;
-
 const HomeContainer = styled.div`
   padding: 0rem 10rem;
   padding-bottom: 5rem;
@@ -151,7 +149,7 @@ const HomeHeader = styled.div`
   border-bottom: 1.5px solid #f2f2f2;
   font-size: 48px;
   font-weight: bold;
-  height: 200px;
+  height: 150px;
 `;
 
 const Text = styled.span`

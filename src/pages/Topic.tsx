@@ -52,9 +52,13 @@ function Topic() {
             <CommentIcon /> Comments
           </CommentHeader>
           <CommentContent>
-            {comments.map((comment, index) => {
-              return <CommentCard key={index} comment={comment} />;
-            })}
+            {comments.length > 0 ? (
+              comments.map((comment, index) => {
+                return <CommentCard key={index} comment={comment} />;
+              })
+            ) : (
+              <div className="noData">No Data</div>
+            )}
             <div ref={textRef} />
           </CommentContent>
 
