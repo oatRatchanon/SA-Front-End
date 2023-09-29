@@ -7,6 +7,9 @@ import { useEffect, useRef, useState } from "react";
 import { Comment } from "../types";
 import CommentIcon from "@mui/icons-material/Comment";
 import AddCommentIcon from "@mui/icons-material/AddComment";
+import { useStore } from "../hooks/useStore";
+import { useGoogleLogin } from "@react-oauth/google";
+import axios from "axios";
 
 function Topic() {
   // const { topicId } = useParams();
@@ -14,18 +17,44 @@ function Topic() {
   const [commentInput, setCommentInput] = useState("");
   const [comments, setComments] = useState<Comment[]>([]);
   const textRef = useRef<null | HTMLDivElement>(null);
+  const { user, setUser } = useStore();
+
+  const login = useGoogleLogin({
+    onSuccess: async (response) => {
+      try {
+        const res = await axios.get(
+          "https://www.googleapis.com/oauth2/v3/userinfo",
+          {
+            headers: { Authorization: `Bearer ${response.access_token}` },
+          }
+        );
+        console.log(res);
+        setUser({
+          email: res.data.email,
+          name: res.data.name,
+          picture: res.data.picture,
+        });
+      } catch (err) {
+        console.log(err);
+      }
+    },
+  });
 
   const handleCommentSubmit = () => {
-    const c: Comment = {
-      id: comments.length + 1,
-      subjectId: 1,
-      description: commentInput,
-      CommenterId: 1,
-      createAt: new Date(),
-      topicId: 1,
-    };
-    setComments((prev) => [...prev, c]);
-    setCommentInput("");
+    if (user) {
+      const c: Comment = {
+        id: comments.length + 1,
+        subjectId: 1,
+        description: commentInput,
+        CommenterId: 1,
+        createAt: new Date(),
+        topicId: 1,
+      };
+      setComments((prev) => [...prev, c]);
+      setCommentInput("");
+    } else {
+      login();
+    }
   };
 
   useEffect(() => {
@@ -68,7 +97,11 @@ function Topic() {
             onChange={(e) => setCommentInput(e.target.value)}
             value={commentInput}
           ></CommentSendBox>
-          <CommentSubmit onClick={handleCommentSubmit}>
+          <CommentSubmit
+            commentInput={commentInput}
+            onClick={handleCommentSubmit}
+            disabled={commentInput === ""}
+          >
             <AddCommentIcon /> Send Comment
           </CommentSubmit>
         </CommentContainer>
@@ -133,11 +166,11 @@ const CommentSendBox = styled.textarea`
   font-size: 16px;
 `;
 
-const CommentSubmit = styled.button`
+const CommentSubmit = styled.button<{ commentInput: string }>`
   font-size: 16px;
   cursor: pointer;
   padding: 0.5rem 1rem;
-  background-color: #2a2d48;
+  background-color: ${(p) => (p.commentInput == "" ? "#838383" : "#2a2d48")};
   color: white;
   font-weight: bold;
   float: right;

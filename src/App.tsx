@@ -63,7 +63,7 @@ function App() {
       </HomeHeader>
       <HomeFilter>
         <div className="FilterBox">
-          <label>Subject</label>
+          <label className="homeLabel">Subject</label>
           <input
             type="search"
             placeholder="--Subject Name--"
@@ -73,7 +73,7 @@ function App() {
           />
         </div>
         <div className="FilterBox">
-          <label>Year</label>
+          <label className="homeLabel">Year</label>
           <select name="year" onChange={handleFilterChange} value={inputs.year}>
             <option value="">--Please choose a year--</option>
             <option value="1">1</option>
@@ -83,7 +83,7 @@ function App() {
           </select>
         </div>
         <div className="FilterBox">
-          <label>Semester</label>
+          <label className="homeLabel">Semester</label>
           <select
             name="semester"
             onChange={handleFilterChange}
@@ -95,7 +95,7 @@ function App() {
           </select>
         </div>
         <div className="FilterBox">
-          <label>Section</label>
+          <label className="homeLabel">Section</label>
           <input
             type="number"
             placeholder="--Section--"

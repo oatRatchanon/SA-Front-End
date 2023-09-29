@@ -10,6 +10,8 @@ import Topic from "./pages/Topic.tsx";
 import TimeAgo from "javascript-time-ago";
 import en from "javascript-time-ago/locale/en.json";
 
+import { GoogleOAuthProvider } from "@react-oauth/google";
+
 TimeAgo.addDefaultLocale(en);
 
 const router = createBrowserRouter([
@@ -39,6 +41,8 @@ const router = createBrowserRouter([
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <RouterProvider router={router} />
+    <GoogleOAuthProvider clientId="954582395472-jef8p703tskimikqcmuv1ct5dkhfu3km.apps.googleusercontent.com">
+      <RouterProvider router={router} />
+    </GoogleOAuthProvider>
   </React.StrictMode>
 );

@@ -12,6 +12,9 @@ import InsertDriveFileIcon from "@mui/icons-material/InsertDriveFile";
 import TopicIcon from "@mui/icons-material/Topic";
 import StarIcon from "@mui/icons-material/Star";
 import StarOutlineIcon from "@mui/icons-material/StarOutline";
+import { useGoogleLogin } from "@react-oauth/google";
+import axios from "axios";
+import { useStore } from "../hooks/useStore";
 
 const customStyles: Styles = {
   content: {
@@ -38,15 +41,34 @@ function Subject() {
   const [topics, setTopics] = useState<Topic[]>([]);
   const [modalIsOpen, setIsOpen] = useState(false);
   const [star, setStar] = useState(false);
+  const { user, setUser } = useStore();
+
+  const login = useGoogleLogin({
+    onSuccess: async (response) => {
+      try {
+        const res = await axios.get(
+          "https://www.googleapis.com/oauth2/v3/userinfo",
+          {
+            headers: { Authorization: `Bearer ${response.access_token}` },
+          }
+        );
+        console.log(res);
+        setUser({
+          email: res.data.email,
+          name: res.data.name,
+          picture: res.data.picture,
+        });
+      } catch (err) {
+        console.log(err);
+      }
+    },
+  });
 
   // Modal
   function openModal() {
     setIsOpen(true);
   }
-  function afterOpenModal() {
-    // references are now sync'd and can be accessed.
-    // subtitle.style.color = "#f00";
-  }
+
   function closeModal() {
     setIsOpen(false);
   }
@@ -79,7 +101,11 @@ function Subject() {
   };
 
   const handleStarClick = () => {
-    setStar(!star);
+    if (user) {
+      setStar(!star);
+    } else {
+      login();
+    }
   };
 
   useEffect(() => {
@@ -112,16 +138,38 @@ function Subject() {
             <StyledHeader>
               <InsertDriveFileIcon /> Files
             </StyledHeader>
-            <Button>
-              <FileUploadIcon />
-              <label
-                htmlFor="file"
-                style={{ cursor: "pointer", fontSize: "16px" }}
-              >
-                Upload File
-              </label>
-              <FileInput type="file" id="file" onChange={handleFileSubmit} />
-            </Button>
+            {user ? (
+              <Button>
+                <label
+                  htmlFor="file"
+                  style={{
+                    cursor: "pointer",
+                    display: "flex",
+                    gap: ".5rem",
+                    alignItems: "center",
+                  }}
+                >
+                  <FileUploadIcon />
+                  Upload File
+                </label>
+                <FileInput type="file" id="file" onChange={handleFileSubmit} />
+              </Button>
+            ) : (
+              <Button onClick={() => login()}>
+                <label
+                  htmlFor="file"
+                  style={{
+                    cursor: "pointer",
+                    display: "flex",
+                    gap: ".5rem",
+                    alignItems: "center",
+                  }}
+                >
+                  <FileUploadIcon />
+                  Upload File
+                </label>
+              </Button>
+            )}
           </FileHeader>
           <FileContent>
             {files.length > 0 ? (
@@ -138,12 +186,17 @@ function Subject() {
             <StyledHeader>
               <TopicIcon /> Topics
             </StyledHeader>
-            <Button onClick={openModal}>
-              <AddCircleOutlineIcon /> Create Topic
-            </Button>
+            {user ? (
+              <Button onClick={openModal}>
+                <AddCircleOutlineIcon /> Create Topic
+              </Button>
+            ) : (
+              <Button onClick={() => login()}>
+                <AddCircleOutlineIcon /> Create Topic
+              </Button>
+            )}
             <Modal
               isOpen={modalIsOpen}
-              onAfterOpen={afterOpenModal}
               onRequestClose={closeModal}
               style={customStyles}
               contentLabel="Example Modal"

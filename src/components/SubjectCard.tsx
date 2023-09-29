@@ -4,6 +4,9 @@ import { Subject } from "../types";
 import StarIcon from "@mui/icons-material/Star";
 import StarOutlineIcon from "@mui/icons-material/StarOutline";
 import { useEffect, useState } from "react";
+import { useStore } from "../hooks/useStore";
+import { useGoogleLogin } from "@react-oauth/google";
+import axios from "axios";
 
 interface SubjectCardProps {
   subject: Subject;
@@ -11,9 +14,35 @@ interface SubjectCardProps {
 
 function SubjectCard({ subject }: SubjectCardProps) {
   const [star, setStar] = useState(false);
+  const { user, setUser } = useStore();
+
+  const login = useGoogleLogin({
+    onSuccess: async (response) => {
+      try {
+        const res = await axios.get(
+          "https://www.googleapis.com/oauth2/v3/userinfo",
+          {
+            headers: { Authorization: `Bearer ${response.access_token}` },
+          }
+        );
+        console.log(res);
+        setUser({
+          email: res.data.email,
+          name: res.data.name,
+          picture: res.data.picture,
+        });
+      } catch (err) {
+        console.log(err);
+      }
+    },
+  });
 
   const handleStarClick = () => {
-    setStar(!star);
+    if (user) {
+      setStar(!star);
+    } else {
+      login();
+    }
   };
 
   useEffect(() => {

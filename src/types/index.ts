@@ -41,3 +41,9 @@ export type File = {
   name: string;
   createAt: Date;
 };
+
+export type User = {
+  email: string;
+  name: string;
+  picture: string;
+};
