@@ -10,8 +10,6 @@ import FileUploadIcon from "@mui/icons-material/FileUpload";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import InsertDriveFileIcon from "@mui/icons-material/InsertDriveFile";
 import TopicIcon from "@mui/icons-material/Topic";
-// import StarIcon from "@mui/icons-material/Star";
-// import StarOutlineIcon from "@mui/icons-material/StarOutline";
 import { useGoogleLogin } from "@react-oauth/google";
 import axios from "axios";
 import { useStore } from "../hooks/useStore";
@@ -40,7 +38,7 @@ function Subject() {
   const [files, setFiles] = useState<File[]>([]);
   const [topics, setTopics] = useState<Topic[]>([]);
   const [modalIsOpen, setIsOpen] = useState(false);
-  // const [star, setStar] = useState(false);
+
   const { user, setUser } = useStore();
 
   const login = useGoogleLogin({
@@ -100,18 +98,9 @@ function Subject() {
     setFiles((prev) => [...prev, file]);
   };
 
-  // const handleStarClick = () => {
-  //   if (user) {
-  //     setStar(!star);
-  //   } else {
-  //     login();
-  //   }
-  // };
-
   useEffect(() => {
     setFiles(subject.files);
     setTopics(subject.topics);
-    // if (subject.star) setStar(subject.star);
   }, [subject.files, subject.topics, subject.star]);
 
   return (
@@ -124,15 +113,6 @@ function Subject() {
               Year : {subject.year} | Semester : {subject.semester} | Section :{" "}
               {subject.section}
             </h3>
-            {/* {user && (
-              <div onClick={handleStarClick}>
-                {star ? (
-                  <StarIcon fontSize={"large"} className="StarIcon" />
-                ) : (
-                  <StarOutlineIcon fontSize={"large"} className="StarIcon" />
-                )}
-              </div>
-            )} */}
           </HeaderFooter>
         </HeaderContainer>
         <FileContainer>
