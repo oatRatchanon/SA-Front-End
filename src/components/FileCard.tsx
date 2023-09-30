@@ -6,18 +6,65 @@ import DownloadIcon from "@mui/icons-material/Download";
 import LinkIcon from "@mui/icons-material/Link";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import { useState } from "react";
+import { useStore } from "../hooks/useStore";
+import { useGoogleLogin } from "@react-oauth/google";
+import axios from "axios";
+import StarIcon from "@mui/icons-material/Star";
+import StarOutlineIcon from "@mui/icons-material/StarOutline";
 
 interface FileCardProps {
   file: File;
 }
 function FileCard({ file }: FileCardProps) {
   const [copied, setCopied] = useState(false);
+  const [star, setStar] = useState(false);
+  const { user, setUser } = useStore();
+
+  const login = useGoogleLogin({
+    onSuccess: async (response) => {
+      try {
+        const res = await axios.get(
+          "https://www.googleapis.com/oauth2/v3/userinfo",
+          {
+            headers: { Authorization: `Bearer ${response.access_token}` },
+          }
+        );
+        console.log(res);
+        setUser({
+          email: res.data.email,
+          name: res.data.name,
+          picture: res.data.picture,
+        });
+      } catch (err) {
+        console.log(err);
+      }
+    },
+  });
+
+  const handleStarClick = () => {
+    if (user) {
+      setStar(!star);
+    } else {
+      login();
+    }
+  };
 
   return (
     <FileCardContainer>
       <Content>
         <FileText>{file.name}</FileText>
-        <DateText date={file.createAt} />
+        <FooterContent>
+          <DateText date={file.createAt} />
+          {user && (
+            <StarContainer onClick={handleStarClick}>
+              {star ? (
+                <StarIcon className="StarIcon" />
+              ) : (
+                <StarOutlineIcon className="StarIcon" />
+              )}
+            </StarContainer>
+          )}
+        </FooterContent>
       </Content>
       <SideBar>
         <StyledA
@@ -36,6 +83,18 @@ function FileCard({ file }: FileCardProps) {
     </FileCardContainer>
   );
 }
+
+const FooterContent = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+`;
+
+const StarContainer = styled.div`
+  color: #2a2d48;
+  display: flex;
+  align-items: center;
+`;
 
 const FileCardContainer = styled.div`
   text-decoration: none;

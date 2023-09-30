@@ -1,69 +1,71 @@
 import { Link } from "react-router-dom";
 import styled from "styled-components";
 import { Subject } from "../types";
-import StarIcon from "@mui/icons-material/Star";
-import StarOutlineIcon from "@mui/icons-material/StarOutline";
-import { useEffect, useState } from "react";
-import { useStore } from "../hooks/useStore";
-import { useGoogleLogin } from "@react-oauth/google";
-import axios from "axios";
+// import { useEffect } from "react";
+// import StarIcon from "@mui/icons-material/Star";
+// import StarOutlineIcon from "@mui/icons-material/StarOutline";
+// import { useStore } from "../hooks/useStore";
+// import { useGoogleLogin } from "@react-oauth/google";
+// import axios from "axios";
 
 interface SubjectCardProps {
   subject: Subject;
 }
 
 function SubjectCard({ subject }: SubjectCardProps) {
-  const [star, setStar] = useState(false);
-  const { user, setUser } = useStore();
+  // const [star, setStar] = useState(false);
+  // const { user, setUser } = useStore();
 
-  const login = useGoogleLogin({
-    onSuccess: async (response) => {
-      try {
-        const res = await axios.get(
-          "https://www.googleapis.com/oauth2/v3/userinfo",
-          {
-            headers: { Authorization: `Bearer ${response.access_token}` },
-          }
-        );
-        console.log(res);
-        setUser({
-          email: res.data.email,
-          name: res.data.name,
-          picture: res.data.picture,
-        });
-      } catch (err) {
-        console.log(err);
-      }
-    },
-  });
+  // const login = useGoogleLogin({
+  //   onSuccess: async (response) => {
+  //     try {
+  //       const res = await axios.get(
+  //         "https://www.googleapis.com/oauth2/v3/userinfo",
+  //         {
+  //           headers: { Authorization: `Bearer ${response.access_token}` },
+  //         }
+  //       );
+  //       console.log(res);
+  //       setUser({
+  //         email: res.data.email,
+  //         name: res.data.name,
+  //         picture: res.data.picture,
+  //       });
+  //     } catch (err) {
+  //       console.log(err);
+  //     }
+  //   },
+  // });
 
-  const handleStarClick = () => {
-    if (user) {
-      setStar(!star);
-    } else {
-      login();
-    }
-  };
+  // const handleStarClick = () => {
+  //   if (user) {
+  //     setStar(!star);
+  //   } else {
+  //     login();
+  //   }
+  // };
 
-  useEffect(() => {
-    if (subject.star) setStar(subject.star);
-  }, [subject.star]);
+  // useEffect(() => {
+  //   if (subject.star) setStar(subject.star);
+  // }, [subject.star]);
 
   return (
-    <Container style={{ position: "relative" }}>
+    <Container>
       <StyledLink to={`/subjects/${subject.id}`}>
         <SubjectText>{subject.name}</SubjectText>
         <Text>Year : {subject.year}</Text>
         <Text>Semester : {subject.semester}</Text>
         <Text>Section : {subject.section}</Text>
       </StyledLink>
-      <StarContainer onClick={handleStarClick}>
-        {star ? (
-          <StarIcon className="StarIcon" />
-        ) : (
-          <StarOutlineIcon className="StarIcon" />
-        )}
-      </StarContainer>
+      {/* {user && (
+        <StarContainer onClick={handleStarClick}>
+          {star ? (
+            <StarIcon className="StarIcon" />
+          ) : (
+            <StarOutlineIcon className="StarIcon" />
+          )}
+        </StarContainer>
+      )} */}
     </Container>
   );
 }
@@ -102,12 +104,12 @@ const SubjectText = styled.span`
   font-size: 20px;
 `;
 
-const StarContainer = styled.div`
-  position: absolute;
-  right: 10px;
-  bottom: 10px;
-  color: #2a2d48;
-  z-index: 2;
-`;
+// const StarContainer = styled.div`
+//   position: absolute;
+//   right: 10px;
+//   bottom: 10px;
+//   color: #2a2d48;
+//   z-index: 2;
+// `;
 
 export default SubjectCard;
