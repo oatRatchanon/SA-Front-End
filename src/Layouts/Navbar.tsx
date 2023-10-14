@@ -1,32 +1,68 @@
+import { useEffect } from "react";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
-import { useGoogleLogin, googleLogout } from "@react-oauth/google";
 import axios from "axios";
 import { useStore } from "../hooks/useStore";
+import Cookies from "js-cookie";
+import { deleteCookie } from "../utils/cookie";
+import { GATEWAY_URL } from "../config/env";
+import { renewAccessToken, getRefreshToken } from "../utils/auth";
+
+const googleLoginURL = `${GATEWAY_URL}/api/auth/google/login`;
 
 function Navbar() {
   const { user, setUser } = useStore();
 
-  const login = useGoogleLogin({
-    onSuccess: async (response) => {
+  useEffect(() => {
+    const accessToken = Cookies.get("accessToken");
+
+    const fetchUserDetails = async () => {
       try {
-        const res = await axios.get(
-          "https://www.googleapis.com/oauth2/v3/userinfo",
-          {
-            headers: { Authorization: `Bearer ${response.access_token}` },
-          }
-        );
-        console.log(res);
-        setUser({
-          email: res.data.email,
-          name: res.data.name,
-          picture: res.data.picture,
+        const res = await axios.get(`${GATEWAY_URL}/api/auth/me`, {
+          headers: { Authorization: `Bearer ${accessToken}` },
         });
+        const email = res?.data?.email ?? "";
+        const displayName = res?.data?.displayName ?? "";
+        setUser({ email, displayName });
       } catch (err) {
-        console.log(err);
+        if (err.response && err.response.status === 401) {
+          // If a 401 error occurs, renew the token
+          try {
+            // Call your renewToken function to refresh the token
+            const refreshToken = getRefreshToken() ?? "";
+            await renewAccessToken(refreshToken);
+
+            // Retry fetching user details after token renewal
+            const newAccessToken = Cookies.get("accessToken");
+            const res = await axios.get(`${GATEWAY_URL}/api/auth/me`, {
+              headers: { Authorization: `Bearer ${newAccessToken}` },
+            });
+            const email = res?.data?.email ?? "";
+            const displayName = res?.data?.displayName ?? "";
+            setUser({ email, displayName });
+          } catch (renewError) {
+            console.log("Token renewal failed:", renewError);
+            // Handle token renewal failure, e.g., redirect to login
+          }
+        }
       }
-    },
-  });
+    };
+
+    fetchUserDetails();
+  }, [setUser]);
+
+  const logout = () => {
+    try {
+      const accessToken = Cookies.get("accessToken");
+      axios.get(`${GATEWAY_URL}/api/auth/logout`, {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      });
+      deleteCookie("accessToken");
+      deleteCookie("refreshToken");
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   return (
     <Nav>
@@ -34,19 +70,22 @@ function Navbar() {
         <StyledLink to="/">CUTaskOverflow</StyledLink>
         {user ? (
           <RightContainer>
-            <UserImg src={user.picture} alt={user.picture} />
-            <div>{user.name}</div>
+            {/* <UserImg src={user.picture} alt={user.picture} /> */}
+            <div>{user.displayName}</div>
             <LoginContainer
               onClick={() => {
                 setUser(undefined);
-                googleLogout();
+                logout();
               }}
             >
               Sign Out
             </LoginContainer>
           </RightContainer>
         ) : (
-          <LoginContainer onClick={() => login()}>Sign In</LoginContainer>
+          <LoginContainer href={googleLoginURL}>
+            {/* <LoginContainer onClick={() => login()}> */}
+            Sign In
+          </LoginContainer>
         )}
       </FullNavContainer>
     </Nav>
@@ -89,7 +128,7 @@ const StyledLink = styled(Link)`
   font-weight: bold;
 `;
 
-const LoginContainer = styled.div`
+const LoginContainer = styled.a`
   font-weight: bold;
   color: white;
   border: 1px solid white;
