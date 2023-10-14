@@ -44,6 +44,5 @@ export type File = {
 
 export type User = {
   email: string;
-  name: string;
-  picture: string;
+  displayName: string;
 };
