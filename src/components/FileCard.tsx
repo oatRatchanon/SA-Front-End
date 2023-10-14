@@ -109,7 +109,7 @@ const FileCardContainer = styled.div`
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
-  gap: 1rem;
+
   box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
   transition-duration: 0.3s;
   &:hover {
@@ -122,7 +122,7 @@ const Content = styled.div`
   flex-direction: column;
   justify-content: center;
   gap: 1rem;
-  width: 80%;
+  width: 70%;
 `;
 
 const DateText = styled(ReactTimeAgo)`
@@ -158,15 +158,17 @@ const SideBar = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
-  align-items: center;
+  align-items: end;
   gap: 0.4rem;
   font-size: 16px;
   cursor: pointer;
+  width: 30%;
 `;
 
 const LinkContainer = styled.div`
   display: flex;
   gap: 0 0.2rem;
+  margin-right: 0.3rem;
 `;
 
 export default FileCard;
