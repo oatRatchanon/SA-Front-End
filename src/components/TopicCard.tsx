@@ -29,6 +29,7 @@ const StyledLink = styled(Link)`
   flex-direction: column;
   flex-wrap: wrap;
   justify-content: center;
+  align-items: start;
   gap: 1rem;
   box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
   transition-duration: 0.3s;

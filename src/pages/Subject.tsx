@@ -10,9 +10,8 @@ import FileUploadIcon from "@mui/icons-material/FileUpload";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import InsertDriveFileIcon from "@mui/icons-material/InsertDriveFile";
 import TopicIcon from "@mui/icons-material/Topic";
-import { useGoogleLogin } from "@react-oauth/google";
-import axios from "axios";
 import { useStore } from "../hooks/useStore";
+import { GATEWAY_URL } from "../config/env";
 
 const customStyles: Styles = {
   content: {
@@ -31,6 +30,8 @@ interface Inputs {
   password: string;
 }
 
+const googleLoginURL = `${GATEWAY_URL}/api/auth/google/login`;
+
 function Subject() {
   const { subjectId } = useParams();
   const subject = subjects[Number(subjectId) - 1];
@@ -39,28 +40,7 @@ function Subject() {
   const [topics, setTopics] = useState<Topic[]>([]);
   const [modalIsOpen, setIsOpen] = useState(false);
 
-  const { user, setUser } = useStore();
-
-  const login = useGoogleLogin({
-    onSuccess: async (response) => {
-      try {
-        const res = await axios.get(
-          "https://www.googleapis.com/oauth2/v3/userinfo",
-          {
-            headers: { Authorization: `Bearer ${response.access_token}` },
-          }
-        );
-        console.log(res);
-        setUser({
-          email: res.data.email,
-          name: res.data.name,
-          picture: res.data.picture,
-        });
-      } catch (err) {
-        console.log(err);
-      }
-    },
-  });
+  const { user } = useStore();
 
   // Modal
   function openModal() {
@@ -137,19 +117,21 @@ function Subject() {
                 <FileInput type="file" id="file" onChange={handleFileSubmit} />
               </Button>
             ) : (
-              <Button onClick={() => login()}>
-                <label
-                  htmlFor="file"
-                  style={{
-                    cursor: "pointer",
-                    display: "flex",
-                    gap: ".5rem",
-                    alignItems: "center",
-                  }}
-                >
-                  <FileUploadIcon />
-                  Upload File
-                </label>
+              <Button>
+                <a href={googleLoginURL}>
+                  <label
+                    htmlFor="file"
+                    style={{
+                      cursor: "pointer",
+                      display: "flex",
+                      gap: ".5rem",
+                      alignItems: "center",
+                    }}
+                  >
+                    <FileUploadIcon />
+                    Upload File
+                  </label>
+                </a>
               </Button>
             )}
           </FileHeader>
@@ -173,8 +155,10 @@ function Subject() {
                 <AddCircleOutlineIcon /> Create Topic
               </Button>
             ) : (
-              <Button onClick={() => login()}>
-                <AddCircleOutlineIcon /> Create Topic
+              <Button>
+                <a href={googleLoginURL}>
+                  <AddCircleOutlineIcon /> Create Topic
+                </a>
               </Button>
             )}
             <Modal

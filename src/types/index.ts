@@ -1,8 +1,9 @@
 export type Subject = {
   id: number;
+  subjectId: string;
   name: string;
-  year: number;
   semester: number;
+  year: number;
   section: number;
   instructors: Instructor[];
   description: string;

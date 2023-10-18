@@ -1,34 +1,38 @@
-import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from "axios";
+import axios, {
+  AxiosError,
+  AxiosInstance,
+  AxiosResponse,
+  InternalAxiosRequestConfig,
+} from "axios";
 import { GATEWAY_URL } from "../config/env";
-import { getAccessToken, getRefreshToken, renewAccessToken } from "./auth";
+import { getAccessToken } from "../services/auth";
 
-const apiClient = axios.create({
+export const apiClient: AxiosInstance = axios.create({
   baseURL: GATEWAY_URL,
   timeout: 10000,
 });
 
-const onRequest = (config: AxiosRequestConfig): AxiosRequestConfig => {
+const onRequest = (config: InternalAxiosRequestConfig) => {
+  if (!config.headers.get("Content-Type"))
+    config.headers.set("Content-Type", "application/json");
+  if (!config.headers.get("Cache-Control"))
+    config.headers.set("Cache-Control", "no-cache");
+  // config.withCredentials = true;
   const accessToken = getAccessToken();
-  if (!accessToken) {
-    return config;
-  }
-  const configs = config || {};
-  const headers = configs?.headers || {};
-  return {
-    ...configs,
-    headers: { ...headers, Authorization: `Bearer ${accessToken}` },
-  };
+  console.log(accessToken);
+
+  if (!accessToken) return config;
+  if (!config.headers.get("Authorization"))
+    config.headers.set("Authorization", `Bearer ${accessToken}`);
+  return config;
 };
 
 const onRequestError = (error: AxiosError): Promise<AxiosError> => {
   return Promise.reject(error);
 };
 
-const onResponse = (
-  response: AxiosResponse
-  // error: AxiosError
-): AxiosResponse => {
-  // if (error.response && error.response.status === 401) {
+const onResponse = async (response: AxiosResponse) => {
+  // if (response && response.status === 401) {
   //   try {
   //     const refreshToken = getRefreshToken() || "";
   //     if (!refreshToken) {
@@ -36,19 +40,21 @@ const onResponse = (
   //       // return handleLogin();
   //     }
   //     const newToken = await renewAccessToken(refreshToken);
+
   //     // Set the new token in the request headers
-  //     error?.config?.headers.Authorization = `Bearer ${newToken}`;
+  //     response?.config?.headers.set("Authorization", `Bearer ${newToken}`);
   //     // Retry the request
-  //     return apiClient.request(error.config);
+  //     // return apiClient.request(error.config);
+  //     return response;
   //   } catch (refreshError) {
   //     // Handle token refresh failure (e.g., log the user out)
-  //     return handle401Error(refreshError);
+  //     // return handle401Error(refreshError);
   //   }
   // }
   return response;
 };
 
-const onResponseError = (error: AxiosError): Promise<AxiosError> => {
+const onResponseError = async (error: AxiosError): Promise<AxiosError> => {
   return Promise.reject(error);
 };
 

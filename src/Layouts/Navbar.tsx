@@ -1,12 +1,9 @@
 import { useEffect } from "react";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
-import axios from "axios";
 import { useStore } from "../hooks/useStore";
-import Cookies from "js-cookie";
-import { deleteCookie } from "../utils/cookie";
 import { GATEWAY_URL } from "../config/env";
-import { renewAccessToken, getRefreshToken } from "../utils/auth";
+import { fetchUserDetailsService, logoutService } from "../services/auth";
 
 const googleLoginURL = `${GATEWAY_URL}/api/auth/google/login`;
 
@@ -14,54 +11,12 @@ function Navbar() {
   const { user, setUser } = useStore();
 
   useEffect(() => {
-    const accessToken = Cookies.get("accessToken");
-
-    const fetchUserDetails = async () => {
-      try {
-        const res = await axios.get(`${GATEWAY_URL}/api/auth/me`, {
-          headers: { Authorization: `Bearer ${accessToken}` },
-        });
-        const email = res?.data?.email ?? "";
-        const displayName = res?.data?.displayName ?? "";
-        setUser({ email, displayName });
-      } catch (err) {
-        if (err.response && err.response.status === 401) {
-          // If a 401 error occurs, renew the token
-          try {
-            // Call your renewToken function to refresh the token
-            const refreshToken = getRefreshToken() ?? "";
-            await renewAccessToken(refreshToken);
-
-            // Retry fetching user details after token renewal
-            const newAccessToken = Cookies.get("accessToken");
-            const res = await axios.get(`${GATEWAY_URL}/api/auth/me`, {
-              headers: { Authorization: `Bearer ${newAccessToken}` },
-            });
-            const email = res?.data?.email ?? "";
-            const displayName = res?.data?.displayName ?? "";
-            setUser({ email, displayName });
-          } catch (renewError) {
-            console.log("Token renewal failed:", renewError);
-            // Handle token renewal failure, e.g., redirect to login
-          }
-        }
-      }
-    };
-
-    fetchUserDetails();
+    fetchUserDetailsService(setUser);
   }, [setUser]);
 
-  const logout = () => {
-    try {
-      const accessToken = Cookies.get("accessToken");
-      axios.get(`${GATEWAY_URL}/api/auth/logout`, {
-        headers: { Authorization: `Bearer ${accessToken}` },
-      });
-      deleteCookie("accessToken");
-      deleteCookie("refreshToken");
-    } catch (err) {
-      console.log(err);
-    }
+  const handleClickLogout = () => {
+    setUser(undefined);
+    logoutService(setUser);
   };
 
   return (
@@ -72,12 +27,7 @@ function Navbar() {
           <RightContainer>
             {/* <UserImg src={user.picture} alt={user.picture} /> */}
             <div>{user.displayName}</div>
-            <LoginContainer
-              onClick={() => {
-                setUser(undefined);
-                logout();
-              }}
-            >
+            <LoginContainer onClick={handleClickLogout}>
               Sign Out
             </LoginContainer>
           </RightContainer>
@@ -92,11 +42,11 @@ function Navbar() {
   );
 }
 
-const UserImg = styled.img`
-  width: 2.4rem;
-  height: 2.4rem;
-  border-radius: 50%;
-`;
+// const UserImg = styled.img`
+//   width: 2.4rem;
+//   height: 2.4rem;
+//   border-radius: 50%;
+// `;
 
 const RightContainer = styled.div`
   display: flex;

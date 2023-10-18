@@ -8,8 +8,9 @@ import { Comment } from "../types";
 import CommentIcon from "@mui/icons-material/Comment";
 import AddCommentIcon from "@mui/icons-material/AddComment";
 import { useStore } from "../hooks/useStore";
-import { useGoogleLogin } from "@react-oauth/google";
-import axios from "axios";
+import { GATEWAY_URL } from "../config/env";
+
+const googleLoginURL = `${GATEWAY_URL}/api/auth/google/login`;
 
 function Topic() {
   // const { topicId } = useParams();
@@ -17,28 +18,7 @@ function Topic() {
   const [commentInput, setCommentInput] = useState("");
   const [comments, setComments] = useState<Comment[]>([]);
   const textRef = useRef<null | HTMLDivElement>(null);
-  const { user, setUser } = useStore();
-
-  const login = useGoogleLogin({
-    onSuccess: async (response) => {
-      try {
-        const res = await axios.get(
-          "https://www.googleapis.com/oauth2/v3/userinfo",
-          {
-            headers: { Authorization: `Bearer ${response.access_token}` },
-          }
-        );
-        console.log(res);
-        setUser({
-          email: res.data.email,
-          name: res.data.name,
-          picture: res.data.picture,
-        });
-      } catch (err) {
-        console.log(err);
-      }
-    },
-  });
+  const { user } = useStore();
 
   const handleCommentSubmit = () => {
     if (user) {
@@ -53,7 +33,7 @@ function Topic() {
       setComments((prev) => [...prev, c]);
       setCommentInput("");
     } else {
-      login();
+      window.location.href = googleLoginURL;
     }
   };
 
