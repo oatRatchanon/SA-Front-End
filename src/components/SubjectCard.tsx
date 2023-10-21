@@ -10,10 +10,12 @@ function SubjectCard({ subject }: SubjectCardProps) {
   return (
     <Container>
       <StyledLink to={`/subjects/${subject.id}`}>
-        <SubjectText>{subject.name}</SubjectText>
+        <SubjectText>
+          {subject.subjectId} {subject.name}
+        </SubjectText>
         <Text>Year : {subject.year}</Text>
         <Text>Semester : {subject.semester}</Text>
-        <Text>Section : {subject.section}</Text>
+        {/* <Text>Section : {subject.section}</Text> */}
       </StyledLink>
     </Container>
   );

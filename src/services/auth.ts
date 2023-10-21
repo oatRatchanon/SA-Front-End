@@ -7,15 +7,10 @@ import { apiClient } from "../utils/axios";
 import { User } from "../types";
 import { deleteCookie } from "../utils/cookie";
 
-const authClient = axios.create({
-  baseURL: GATEWAY_URL,
-  timeout: 10000,
-});
-
 const renewAccessToken = async (refreshToken: string) => {
   let res: AxiosResponse;
   try {
-    res = await authClient.get<ICredential>("api/auth/refreshToken", {
+    res = await apiClient.get<ICredential>("api/auth/refreshToken", {
       headers: { Authorization: `Bearer ${refreshToken}` },
     });
     setCookie("accessToken", res.data.accessToken);
@@ -41,8 +36,6 @@ const fetchUserDetailsService = async (
 ) => {
   try {
     const res = await apiClient.get(`/api/auth/me`);
-    console.log(res.data);
-
     const email = res?.data?.email ?? "";
     const displayName = res?.data?.displayName ?? "";
     setUser({ email, displayName });

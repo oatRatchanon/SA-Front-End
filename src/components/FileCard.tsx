@@ -1,13 +1,11 @@
 import styled from "styled-components";
 import { File } from "../types";
-import ReactTimeAgo from "react-time-ago";
+// import ReactTimeAgo from "react-time-ago";
 import DownloadIcon from "@mui/icons-material/Download";
 import LinkIcon from "@mui/icons-material/Link";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import { useState } from "react";
 import { useStore } from "../hooks/useStore";
-import { useGoogleLogin } from "@react-oauth/google";
-import axios from "axios";
 import StarIcon from "@mui/icons-material/Star";
 import StarOutlineIcon from "@mui/icons-material/StarOutline";
 
@@ -17,35 +15,36 @@ interface FileCardProps {
 function FileCard({ file }: FileCardProps) {
   const [copied, setCopied] = useState(false);
   const [star, setStar] = useState(false);
-  const { user, setUser } = useStore();
+  const { user } = useStore();
 
-  const login = useGoogleLogin({
-    onSuccess: async (response) => {
-      try {
-        const res = await axios.get(
-          "https://www.googleapis.com/oauth2/v3/userinfo",
-          {
-            headers: { Authorization: `Bearer ${response.access_token}` },
-          }
-        );
-        console.log(res);
-        setUser({
-          email: res.data.email,
-          name: res.data.name,
-          picture: res.data.picture,
-        });
-      } catch (err) {
-        console.log(err);
-      }
-    },
-  });
+  // const login = useGoogleLogin({
+  //   onSuccess: async (response) => {
+  //     try {
+  //       const res = await axios.get(
+  //         "https://www.googleapis.com/oauth2/v3/userinfo",
+  //         {
+  //           headers: { Authorization: `Bearer ${response.access_token}` },
+  //         }
+  //       );
+  //       console.log(res);
+  //       setUser({
+  //         email: res.data.email,
+  //         name: res.data.name,
+  //         picture: res.data.picture,
+  //       });
+  //     } catch (err) {
+  //       console.log(err);
+  //     }
+  //   },
+  // });
 
   const handleStarClick = () => {
     if (user) {
       setStar(!star);
-    } else {
-      login();
     }
+    // } else {
+    //   login();
+    // }
   };
 
   return (
@@ -53,7 +52,7 @@ function FileCard({ file }: FileCardProps) {
       <Content>
         <FileText>{file.name}</FileText>
         <FooterContent>
-          <DateText date={file.createAt} />
+          {/* <DateText date={file.createAt} /> */}
           {user && (
             <StarContainer onClick={handleStarClick}>
               {star ? (
@@ -125,9 +124,9 @@ const Content = styled.div`
   width: 70%;
 `;
 
-const DateText = styled(ReactTimeAgo)`
-  font-size: 14px;
-`;
+// const DateText = styled(ReactTimeAgo)`
+//   font-size: 14px;
+// `;
 
 const FileText = styled.span`
   color: black;

@@ -1,10 +1,9 @@
 import { useParams } from "react-router-dom";
-import { subjects } from "../subject";
 import styled from "styled-components";
 import TopicCard from "../components/TopicCard";
 import FileCard from "../components/FileCard";
 import { useEffect, useState } from "react";
-import { File, Topic } from "../types";
+import { File, Subject, Topic } from "../types";
 import Modal, { Styles } from "react-modal";
 import FileUploadIcon from "@mui/icons-material/FileUpload";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
@@ -12,6 +11,8 @@ import InsertDriveFileIcon from "@mui/icons-material/InsertDriveFile";
 import TopicIcon from "@mui/icons-material/Topic";
 import { useStore } from "../hooks/useStore";
 import { GATEWAY_URL } from "../config/env";
+import { getSubjectByIdService } from "../services/subjects";
+import { searchFileService, uploadFileService } from "../services/files";
 
 const customStyles: Styles = {
   content: {
@@ -33,13 +34,19 @@ interface Inputs {
 const googleLoginURL = `${GATEWAY_URL}/api/auth/google/login`;
 
 function Subject() {
-  const { subjectId } = useParams();
-  const subject = subjects[Number(subjectId) - 1];
+  const { id } = useParams();
+  const [subject, setSubject] = useState<Subject>({
+    id: 1,
+    subjectId: "6",
+    name: "Hello6",
+    semester: 1,
+    year: 2022,
+  });
   const [inputs, setInputs] = useState<Inputs>({ username: "", password: "" });
   const [files, setFiles] = useState<File[]>([]);
   const [topics, setTopics] = useState<Topic[]>([]);
   const [modalIsOpen, setIsOpen] = useState(false);
-
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   const { user } = useStore();
 
   // Modal
@@ -72,29 +79,65 @@ function Subject() {
     closeModal();
   };
 
-  const handleFileSubmit = (event: { target: HTMLInputElement }) => {
-    const f = event.target.files?.[0];
-    const file: File = { name: f?.name || "", createAt: new Date() };
-    setFiles((prev) => [...prev, file]);
+  const handleFileSubmit = async (event: { target: HTMLInputElement }) => {
+    const selectedFile = event.target.files?.[0];
+    if (selectedFile && id) {
+      setIsLoading(true);
+      await uploadFileService(selectedFile, id);
+      const results = await searchFileService(id);
+      const tempfiles = results.fileNames.map((fileName: string) => {
+        return { name: fileName };
+      });
+      setFiles(tempfiles);
+      setIsLoading(false);
+    }
   };
 
   useEffect(() => {
-    setFiles(subject.files);
-    setTopics(subject.topics);
-  }, [subject.files, subject.topics, subject.star]);
+    const fetchData = async () => {
+      if (id) {
+        const results = await getSubjectByIdService(Number(id));
+        const results2 = await searchFileService(id);
+        setIsLoading(false);
+        setSubject(results.subject);
+        const tempfiles = results2.fileNames.map((fileName: string) => {
+          return { name: fileName };
+        });
+        setFiles(tempfiles);
+      }
+    };
+    fetchData();
+  }, [id]);
+
+  useEffect(() => {
+    setTopics([]);
+  }, []);
 
   return (
     <SubjectContainer>
       <CenterContainer>
-        <HeaderContainer>
-          <h1>{subject.name}</h1>
-          <HeaderFooter>
-            <h3 style={{ color: "#6b6b6b", marginRight: "1rem" }}>
-              Year : {subject.year} | Semester : {subject.semester} | Section :{" "}
-              {subject.section}
-            </h3>
-          </HeaderFooter>
-        </HeaderContainer>
+        {isLoading ? (
+          <HeaderContainer>
+            <h1>-</h1>
+            <HeaderFooter>
+              <h3 style={{ color: "#6b6b6b", marginRight: "1rem" }}>
+                Year : - | Semester : -{/* | Section : {subject.section} */}
+              </h3>
+            </HeaderFooter>
+          </HeaderContainer>
+        ) : (
+          <HeaderContainer>
+            <h1>
+              {subject.subjectId} {subject.name}
+            </h1>
+            <HeaderFooter>
+              <h3 style={{ color: "#6b6b6b", marginRight: "1rem" }}>
+                Year : {subject.year} | Semester : {subject.semester}
+                {/* | Section : {subject.section} */}
+              </h3>
+            </HeaderFooter>
+          </HeaderContainer>
+        )}
         <FileContainer>
           <FileHeader>
             <StyledHeader>
@@ -136,7 +179,9 @@ function Subject() {
             )}
           </FileHeader>
           <FileContent>
-            {files.length > 0 ? (
+            {isLoading ? (
+              <div className="noData">Loading</div>
+            ) : files.length > 0 ? (
               files?.map((file, index) => {
                 return <FileCard key={index} file={file} />;
               })

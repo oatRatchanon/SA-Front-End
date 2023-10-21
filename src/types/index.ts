@@ -1,17 +1,14 @@
-export type Subject = {
+export interface Subject {
   id: number;
   subjectId: string;
   name: string;
   semester: number;
+  sectionIds?: number[];
   year: number;
-  section: number;
-  instructors: Instructor[];
-  description: string;
-  prerequisites: Subject[];
-  topics: Topic[];
-  files: File[];
-  star?: boolean;
-};
+  faculty?: string;
+  description?: string;
+  prerequisites?: string[];
+}
 
 export type Instructor = {
   full_name: string;
@@ -40,7 +37,6 @@ export type Comment = {
 
 export type File = {
   name: string;
-  createAt: Date;
 };
 
 export type User = {

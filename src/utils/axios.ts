@@ -19,8 +19,6 @@ const onRequest = (config: InternalAxiosRequestConfig) => {
     config.headers.set("Cache-Control", "no-cache");
   // config.withCredentials = true;
   const accessToken = getAccessToken();
-  console.log(accessToken);
-
   if (!accessToken) return config;
   if (!config.headers.get("Authorization"))
     config.headers.set("Authorization", `Bearer ${accessToken}`);

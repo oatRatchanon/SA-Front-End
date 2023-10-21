@@ -1,11 +1,12 @@
 import styled from "styled-components";
-import { subjects } from "./subject";
 import SubjectCard from "./components/SubjectCard";
 import { ChangeEvent, useEffect, useState } from "react";
 import "./App.css";
 import { Subject } from "./types";
+import { paginateSubjectService } from "./services/subjects";
 
 interface Inputs {
+  id: string;
   name: string;
   year: string;
   semester: string;
@@ -14,12 +15,15 @@ interface Inputs {
 
 function App() {
   const [inputs, setInputs] = useState<Inputs>({
+    id: "",
     name: "",
     year: "",
     semester: "",
     section: "",
   });
-  const [subject, setSubject] = useState<Subject[]>([]);
+  const [subjects, setSubjects] = useState<Subject[]>([]);
+  const [filterSubjects, setFilterSubjects] = useState<Subject[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   const handleFilterChange = (
     event: ChangeEvent<HTMLSelectElement> | ChangeEvent<HTMLInputElement>
@@ -31,6 +35,7 @@ function App() {
 
   const handleReset = () => {
     setInputs({
+      id: "",
       name: "",
       year: "",
       semester: "",
@@ -39,21 +44,28 @@ function App() {
   };
 
   useEffect(() => {
-    setSubject(subjects);
+    const fetchData = async () => {
+      const results = await paginateSubjectService(1);
+      setSubjects(results.subjects);
+      setFilterSubjects(results.subjects);
+      setIsLoading(false);
+    };
+    fetchData();
   }, []);
 
   useEffect(() => {
     const temp = subjects.filter((subject) => {
       return (
+        (inputs.id === "" ||
+          subject.subjectId.toLowerCase().includes(inputs.id.toLowerCase())) &&
         (inputs.name === "" ||
           subject.name.toLowerCase().includes(inputs.name.toLowerCase())) &&
         (inputs.year === "" || subject.year.toString() === inputs.year) &&
         (inputs.semester === "" ||
-          subject.semester.toString() === inputs.semester) &&
-        (inputs.section === "" || subject.section.toString() === inputs.section)
+          subject.semester.toString() === inputs.semester)
       );
     });
-    setSubject(temp);
+    setFilterSubjects(temp);
   }, [inputs]);
 
   return (
@@ -63,7 +75,17 @@ function App() {
       </HomeHeader>
       <HomeFilter>
         <div className="FilterBox">
-          <label className="homeLabel">Subject</label>
+          <label className="homeLabel">Subject Id</label>
+          <input
+            type="search"
+            placeholder="--Subject Id--"
+            name="id"
+            onChange={handleFilterChange}
+            value={inputs.id}
+          />
+        </div>
+        <div className="FilterBox">
+          <label className="homeLabel">Subject Name</label>
           <input
             type="search"
             placeholder="--Subject Name--"
@@ -76,10 +98,10 @@ function App() {
           <label className="homeLabel">Year</label>
           <select name="year" onChange={handleFilterChange} value={inputs.year}>
             <option value="">--Please choose a year--</option>
-            <option value="1">1</option>
-            <option value="2">2</option>
-            <option value="3">3</option>
-            <option value="4">4</option>
+            <option value="2020">2020</option>
+            <option value="2021">2021</option>
+            <option value="2022">2022</option>
+            <option value="2023">2023</option>
           </select>
         </div>
         <div className="FilterBox">
@@ -94,7 +116,7 @@ function App() {
             <option value="2">2</option>
           </select>
         </div>
-        <div className="FilterBox">
+        {/* <div className="FilterBox">
           <label className="homeLabel">Section</label>
           <input
             type="number"
@@ -103,12 +125,14 @@ function App() {
             onChange={handleFilterChange}
             value={inputs.section}
           />
-        </div>
+        </div> */}
         <Reset onClick={handleReset}>Reset</Reset>
       </HomeFilter>
       <HomeContent>
-        {subject.length > 0 ? (
-          subject.map((subject, index) => {
+        {isLoading ? (
+          <div className="noData">Loading</div>
+        ) : filterSubjects.length > 0 ? (
+          filterSubjects.map((subject, index) => {
             return <SubjectCard key={index} subject={subject} />;
           })
         ) : (
