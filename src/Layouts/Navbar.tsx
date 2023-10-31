@@ -8,11 +8,11 @@ import { fetchUserDetailsService, logoutService } from "../services/auth";
 const googleLoginURL = `${GATEWAY_URL}/api/auth/google/login`;
 
 function Navbar() {
-  const { user, setUser } = useStore();
+  const { user, setUser, setBookmarkFiles } = useStore();
 
   useEffect(() => {
-    fetchUserDetailsService(setUser);
-  }, [setUser]);
+    fetchUserDetailsService(setUser, setBookmarkFiles);
+  }, [setUser, setBookmarkFiles]);
 
   const handleClickLogout = () => {
     setUser(undefined);

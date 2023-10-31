@@ -15,6 +15,7 @@ function SubjectCard({ subject }: SubjectCardProps) {
         </SubjectText>
         <Text>Year : {subject.year}</Text>
         <Text>Semester : {subject.semester}</Text>
+        <Text>Section : {subject.sectionNumbers[0]}</Text>
         {/* <Text>Section : {subject.section}</Text> */}
       </StyledLink>
     </Container>

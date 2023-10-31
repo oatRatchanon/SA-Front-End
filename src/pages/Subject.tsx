@@ -2,7 +2,7 @@ import { useParams } from "react-router-dom";
 import styled from "styled-components";
 import TopicCard from "../components/TopicCard";
 import FileCard from "../components/FileCard";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState, createRef, RefObject } from "react";
 import { File, Subject, Topic } from "../types";
 import Modal, { Styles } from "react-modal";
 import FileUploadIcon from "@mui/icons-material/FileUpload";
@@ -12,7 +12,11 @@ import TopicIcon from "@mui/icons-material/Topic";
 import { useStore } from "../hooks/useStore";
 import { GATEWAY_URL } from "../config/env";
 import { getSubjectByIdService } from "../services/subjects";
-import { searchFileService, uploadFileService } from "../services/files";
+import {
+  getAllBookmark,
+  searchFileService,
+  uploadFileService,
+} from "../services/files";
 
 const customStyles: Styles = {
   content: {
@@ -41,13 +45,16 @@ function Subject() {
     name: "Hello6",
     semester: 1,
     year: 2022,
+    sectionNumbers: [1],
   });
   const [inputs, setInputs] = useState<Inputs>({ username: "", password: "" });
   const [files, setFiles] = useState<File[]>([]);
   const [topics, setTopics] = useState<Topic[]>([]);
   const [modalIsOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isLoadingF, setIsLoadingF] = useState<boolean>(true);
   const { user } = useStore();
+  const checkboxref: RefObject<HTMLInputElement> = createRef();
 
   // Modal
   function openModal() {
@@ -82,14 +89,57 @@ function Subject() {
   const handleFileSubmit = async (event: { target: HTMLInputElement }) => {
     const selectedFile = event.target.files?.[0];
     if (selectedFile && id) {
-      setIsLoading(true);
+      setIsLoadingF(true);
       await uploadFileService(selectedFile, id);
+      const checkboxElement = checkboxref.current;
+      if (checkboxElement && checkboxElement.value.length > 0) {
+        if (checkboxElement.checked) checkboxElement.checked = false;
+      }
+      await fetchFiles();
+      setIsLoadingF(false);
+    }
+  };
+
+  const fetchFiles = useCallback(async () => {
+    if (id) {
+      const { fileIds } = user ? await getAllBookmark() : [];
       const results = await searchFileService(id);
-      const tempfiles = results.fileNames.map((fileName: string) => {
+      let tempfiles = results.fileNames.map((fileName: string) => {
         return { name: fileName };
       });
+      tempfiles = results.fileIds.map((fileId: string, index: number) => {
+        return {
+          name: tempfiles[index].name,
+          id: fileId,
+          star: fileIds.includes(fileId),
+        };
+      });
       setFiles(tempfiles);
-      setIsLoading(false);
+    }
+  }, [id, user]);
+
+  const handleBookmarkFilesChange = async (event: {
+    target: HTMLInputElement;
+  }) => {
+    const { fileIds } = await getAllBookmark();
+    if (event.target.checked && id) {
+      const results = await searchFileService(id);
+      let tempfiles = results.fileNames.map((fileName: string) => {
+        return { name: fileName };
+      });
+      tempfiles = results.fileIds.map((fileId: string, index: number) => {
+        return {
+          name: tempfiles[index].name,
+          id: fileId,
+          star: fileIds.includes(fileId),
+        };
+      });
+      const book = tempfiles.filter((file: File) => {
+        return fileIds.includes(file.id);
+      });
+      setFiles(book);
+    } else if (!event.target.checked) {
+      await fetchFiles();
     }
   };
 
@@ -97,17 +147,14 @@ function Subject() {
     const fetchData = async () => {
       if (id) {
         const results = await getSubjectByIdService(Number(id));
-        const results2 = await searchFileService(id);
-        setIsLoading(false);
         setSubject(results.subject);
-        const tempfiles = results2.fileNames.map((fileName: string) => {
-          return { name: fileName };
-        });
-        setFiles(tempfiles);
+        await fetchFiles();
+        setIsLoading(false);
+        setIsLoadingF(false);
       }
     };
     fetchData();
-  }, [id]);
+  }, [id, fetchFiles]);
 
   useEffect(() => {
     setTopics([]);
@@ -121,7 +168,7 @@ function Subject() {
             <h1>-</h1>
             <HeaderFooter>
               <h3 style={{ color: "#6b6b6b", marginRight: "1rem" }}>
-                Year : - | Semester : -{/* | Section : {subject.section} */}
+                Year : - | Semester : -| Section : -
               </h3>
             </HeaderFooter>
           </HeaderContainer>
@@ -132,8 +179,8 @@ function Subject() {
             </h1>
             <HeaderFooter>
               <h3 style={{ color: "#6b6b6b", marginRight: "1rem" }}>
-                Year : {subject.year} | Semester : {subject.semester}
-                {/* | Section : {subject.section} */}
+                Year : {subject.year} | Semester : {subject.semester} | Section
+                : {subject.sections && subject.sections[0].number}
               </h3>
             </HeaderFooter>
           </HeaderContainer>
@@ -142,6 +189,18 @@ function Subject() {
           <FileHeader>
             <StyledHeader>
               <InsertDriveFileIcon /> Files
+              {user && (
+                <div style={{ fontSize: "16px", marginLeft: "1rem" }}>
+                  <label>
+                    <input
+                      type="checkbox"
+                      onChange={handleBookmarkFilesChange}
+                      ref={checkboxref}
+                    />
+                    <span> Bookmark</span>
+                  </label>
+                </div>
+              )}
             </StyledHeader>
             {user ? (
               <Button>
@@ -179,7 +238,7 @@ function Subject() {
             )}
           </FileHeader>
           <FileContent>
-            {isLoading ? (
+            {isLoadingF ? (
               <div className="noData">Loading</div>
             ) : files.length > 0 ? (
               files?.map((file, index) => {

@@ -3,11 +3,12 @@ export interface Subject {
   subjectId: string;
   name: string;
   semester: number;
-  sectionIds?: number[];
+  sections?: { number: number }[];
   year: number;
   faculty?: string;
   description?: string;
   prerequisites?: string[];
+  sectionNumbers: number[];
 }
 
 export type Instructor = {
@@ -37,6 +38,8 @@ export type Comment = {
 
 export type File = {
   name: string;
+  id: string;
+  star: boolean;
 };
 
 export type User = {

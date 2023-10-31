@@ -6,6 +6,7 @@ import axios, { AxiosError, AxiosResponse } from "axios";
 import { apiClient } from "../utils/axios";
 import { User } from "../types";
 import { deleteCookie } from "../utils/cookie";
+import { getAllBookmark } from "./files";
 
 const renewAccessToken = async (refreshToken: string) => {
   let res: AxiosResponse;
@@ -32,13 +33,16 @@ const getRefreshToken = () => {
 };
 
 const fetchUserDetailsService = async (
-  setUser: (user: User | undefined) => void
+  setUser: (user: User | undefined) => void,
+  setBookmarkFiles: (bookmarkFiles: string[]) => void
 ) => {
   try {
     const res = await apiClient.get(`/api/auth/me`);
     const email = res?.data?.email ?? "";
     const displayName = res?.data?.displayName ?? "";
     setUser({ email, displayName });
+    const resBookmarkFiles = await getAllBookmark();
+    setBookmarkFiles(resBookmarkFiles.fileIds);
   } catch (err) {
     if (err instanceof AxiosError) {
       if (err.response && err.response.status === 401) {
