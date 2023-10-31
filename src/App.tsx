@@ -4,6 +4,7 @@ import { ChangeEvent, useEffect, useState } from "react";
 import "./App.css";
 import { Subject } from "./types";
 import { paginateSubjectService } from "./services/subjects";
+import Skeleton from "@mui/material/Skeleton";
 
 interface Inputs {
   id: string;
@@ -130,7 +131,11 @@ function App() {
       </HomeFilter>
       <HomeContent>
         {isLoading ? (
-          <div className="noData">Loading</div>
+          <>
+            <Skeleton variant="rounded" width="23%" height={177} />
+            <Skeleton variant="rounded" width="23%" height={177} />
+            <Skeleton variant="rounded" width="23%" height={177} />
+          </>
         ) : filterSubjects.length > 0 ? (
           filterSubjects.map((subject, index) => {
             return <SubjectCard key={index} subject={subject} />;

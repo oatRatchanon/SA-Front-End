@@ -17,6 +17,8 @@ import {
   searchFileService,
   uploadFileService,
 } from "../services/files";
+import Skeleton from "@mui/material/Skeleton";
+import Box from "@mui/material/Box";
 
 const customStyles: Styles = {
   content: {
@@ -102,7 +104,11 @@ function Subject() {
 
   const fetchFiles = useCallback(async () => {
     if (id) {
-      const { fileIds } = user ? await getAllBookmark() : [];
+      let fileIds: string[] = [];
+      if (user) {
+        const res = await getAllBookmark();
+        fileIds = res.fileIds;
+      }
       const results = await searchFileService(id);
       let tempfiles = results.fileNames.map((fileName: string) => {
         return { name: fileName };
@@ -165,12 +171,10 @@ function Subject() {
       <CenterContainer>
         {isLoading ? (
           <HeaderContainer>
-            <h1>-</h1>
-            <HeaderFooter>
-              <h3 style={{ color: "#6b6b6b", marginRight: "1rem" }}>
-                Year : - | Semester : -| Section : -
-              </h3>
-            </HeaderFooter>
+            <Box sx={{ width: 300, lineHeight: "2rem" }}>
+              <Skeleton />
+              <Skeleton />
+            </Box>
           </HeaderContainer>
         ) : (
           <HeaderContainer>
@@ -239,7 +243,14 @@ function Subject() {
           </FileHeader>
           <FileContent>
             {isLoadingF ? (
-              <div className="noData">Loading</div>
+              <>
+                <Skeleton variant="rounded" width="30%" height={100} />
+                <Skeleton variant="rounded" width="30%" height={100} />
+                <Skeleton variant="rounded" width="30%" height={100} />
+                <Skeleton variant="rounded" width="30%" height={100} />
+                <Skeleton variant="rounded" width="30%" height={100} />
+                <Skeleton variant="rounded" width="30%" height={100} />
+              </>
             ) : files.length > 0 ? (
               files?.map((file, index) => {
                 return <FileCard key={index} file={file} />;
