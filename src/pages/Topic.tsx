@@ -1,5 +1,5 @@
 // import { useParams } from "react-router-dom";
-import { subjects } from "../subject";
+// import { subjects } from "../subject";
 import styled from "styled-components";
 import ReactTimeAgo from "react-time-ago";
 import CommentCard from "../components/CommentCard";
@@ -14,7 +14,14 @@ const googleLoginURL = `${GATEWAY_URL}/api/auth/google/login`;
 
 function Topic() {
   // const { topicId } = useParams();
-  const topic = subjects[0].topics[0];
+  const topic = {
+    id: 1,
+    subjectId: 1,
+    comments: [],
+    TopicCreatorId: 1,
+    description: "kk",
+    createAt: new Date(),
+  };
   const [commentInput, setCommentInput] = useState("");
   const [comments, setComments] = useState<Comment[]>([]);
   const textRef = useRef<null | HTMLDivElement>(null);
