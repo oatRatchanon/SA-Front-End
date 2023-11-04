@@ -8,5 +8,6 @@ services:
         - VITE_GATEWAY_URL=${VITE_GATEWAY_URL}
         - VITE_DOMAIN=${VITE_DOMAIN}
       context: .
+    image: cu-overflow/web
     ports:
       - "80:8080"
