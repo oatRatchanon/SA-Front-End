@@ -19,6 +19,7 @@ import {
 } from "../services/files";
 import Skeleton from "@mui/material/Skeleton";
 import Box from "@mui/material/Box";
+import { createTopicService, getAllTopicstService } from "../services/topics";
 
 const customStyles: Styles = {
   content: {
@@ -33,8 +34,7 @@ const customStyles: Styles = {
 };
 
 interface Inputs {
-  username: string;
-  password: string;
+  description: string;
 }
 
 const googleLoginURL = `${GATEWAY_URL}/api/auth/google/login`;
@@ -49,12 +49,13 @@ function Subject() {
     year: 2022,
     sectionNumbers: [1],
   });
-  const [inputs, setInputs] = useState<Inputs>({ username: "", password: "" });
+  const [inputs, setInputs] = useState<Inputs>({ description: "" });
   const [files, setFiles] = useState<File[]>([]);
   const [topics, setTopics] = useState<Topic[]>([]);
   const [modalIsOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isLoadingF, setIsLoadingF] = useState<boolean>(true);
+  const [isLoadingT, setIsLoadingT] = useState<boolean>(true);
   const { user } = useStore();
   const checkboxref: RefObject<HTMLInputElement> = createRef();
 
@@ -73,19 +74,26 @@ function Subject() {
     setInputs((values) => ({ ...values, [name]: value }));
   };
 
-  const handleTopicSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleTopicSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    let section;
+    if (subject.sections) section = subject.sections[0].number;
     const topic = {
-      id: topics.length + 1,
-      subjectId: 1,
-      comments: [],
-      TopicCreatorId: 1,
-      description: inputs.username,
-      createAt: new Date(),
+      description: inputs.description,
+      year: subject.year,
+      section: section,
+      semester: subject.semester,
+      subjectId: id,
     };
-    setTopics((prev) => [...prev, topic]);
-    setInputs({ username: "", password: "" });
+    await createTopicService(topic);
+    setInputs({ description: "" });
     closeModal();
+    const results = await getAllTopicstService();
+    const topicsFilter = results.topics.filter((topic: Topic) => {
+      return topic.forum.subjectId === id;
+    });
+    setTopics(topicsFilter);
+    setIsLoadingT(false);
   };
 
   const handleFileSubmit = async (event: { target: HTMLInputElement }) => {
@@ -163,8 +171,18 @@ function Subject() {
   }, [id, fetchFiles]);
 
   useEffect(() => {
-    setTopics([]);
-  }, []);
+    const fetchData = async () => {
+      if (id) {
+        const results = await getAllTopicstService();
+        const topicsFilter = results.topics.filter((topic: Topic) => {
+          return topic.forum.subjectId === id;
+        });
+        setTopics(topicsFilter);
+        setIsLoadingT(false);
+      }
+    };
+    fetchData();
+  }, [id]);
 
   return (
     <SubjectContainer>
@@ -286,22 +304,12 @@ function Subject() {
               <StyledHr /> <br />
               <TopicForm onSubmit={handleTopicSubmit}>
                 <label>
-                  <b> Username :</b> <br />
+                  <b> Description :</b> <br />
                   <br />
                   <StyledInput
                     type="text"
-                    name="username"
-                    value={inputs.username || ""}
-                    onChange={handleTopicChange}
-                  />
-                </label>
-                <label>
-                  <b> Passwaord :</b> <br />
-                  <br />
-                  <StyledInput
-                    type="text"
-                    name="password"
-                    value={inputs.password || ""}
+                    name="description"
+                    value={inputs.description || ""}
                     onChange={handleTopicChange}
                   />
                 </label>
@@ -311,7 +319,16 @@ function Subject() {
             </Modal>
           </TopicHeader>
           <TopicContent>
-            {topics.length > 0 ? (
+            {isLoadingT ? (
+              <>
+                <Skeleton variant="rounded" width="30%" height={100} />
+                <Skeleton variant="rounded" width="30%" height={100} />
+                <Skeleton variant="rounded" width="30%" height={100} />
+                <Skeleton variant="rounded" width="30%" height={100} />
+                <Skeleton variant="rounded" width="30%" height={100} />
+                <Skeleton variant="rounded" width="30%" height={100} />
+              </>
+            ) : topics.length > 0 ? (
               topics.map((topic, index) => {
                 return <TopicCard key={index} topic={topic} />;
               })
@@ -369,6 +386,7 @@ const FileContent = styled.div`
 
 const TopicContainer = styled.div`
   width: 100%;
+  padding-bottom: 4rem;
 `;
 
 const TopicHeader = styled.div`

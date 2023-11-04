@@ -19,21 +19,33 @@ export type Instructor = {
 };
 
 export type Topic = {
-  id: number;
-  subjectId: number;
-  comments: Comment[];
-  TopicCreatorId: number;
+  _id: ID;
+  id: string;
   description: string;
+  topicCreator: string;
+  forumId: string;
   createAt: Date;
+  forum: Forum;
+};
+export type ID = {
+  timestamp: number;
+  date: Date;
+};
+export type Forum = {
+  _id: ID;
+  id: string;
+  subjectId: string;
+  year: number;
+  section: number;
+  semester: number;
 };
 
 export type Comment = {
-  id: number;
-  subjectId: number;
+  id?: string;
+  topicId?: string;
   description: string;
-  CommenterId: number;
+  authorId?: string;
   createAt: Date;
-  topicId: number;
 };
 
 export type File = {

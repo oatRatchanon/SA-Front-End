@@ -9,34 +9,49 @@ import CommentIcon from "@mui/icons-material/Comment";
 import AddCommentIcon from "@mui/icons-material/AddComment";
 import { useStore } from "../hooks/useStore";
 import { GATEWAY_URL } from "../config/env";
+import { getTopicByIdService } from "../services/topics";
+import { useParams } from "react-router-dom";
+import {
+  createCommentService,
+  getCommentByTopicIdService,
+} from "../services/comments";
+import { Box, Skeleton } from "@mui/material";
+
+export interface TopicRes {
+  id: string;
+  forum: Forum;
+  topicCreatorId: string;
+  description: string;
+  createAt: Date;
+  comments: Comment[];
+}
+
+export interface Forum {
+  id: string;
+  subjectId: string;
+  year: number;
+  semester: number;
+  section: number;
+}
 
 const googleLoginURL = `${GATEWAY_URL}/api/auth/google/login`;
 
 function Topic() {
-  // const { topicId } = useParams();
-  const topic = {
-    id: 1,
-    subjectId: 1,
-    comments: [],
-    TopicCreatorId: 1,
-    description: "kk",
-    createAt: new Date(),
-  };
+  const { topicId } = useParams();
+  const [topic, setTopic] = useState<TopicRes | null>(null);
   const [commentInput, setCommentInput] = useState("");
   const [comments, setComments] = useState<Comment[]>([]);
+  const [isLoadingC, setIsLoadingC] = useState<boolean>(true);
   const textRef = useRef<null | HTMLDivElement>(null);
   const { user } = useStore();
 
-  const handleCommentSubmit = () => {
-    if (user) {
+  const handleCommentSubmit = async () => {
+    if (user && topicId) {
       const c: Comment = {
-        id: comments.length + 1,
-        subjectId: 1,
         description: commentInput,
-        CommenterId: 1,
         createAt: new Date(),
-        topicId: 1,
       };
+      await createCommentService(topicId, commentInput);
       setComments((prev) => [...prev, c]);
       setCommentInput("");
     } else {
@@ -45,8 +60,17 @@ function Topic() {
   };
 
   useEffect(() => {
-    setComments(topic.comments);
-  }, [topic.comments]);
+    const fetchData = async () => {
+      if (topicId) {
+        const results = await getTopicByIdService(topicId);
+        setTopic(results);
+        const results2 = await getCommentByTopicIdService(topicId);
+        setComments(results2.comments);
+        setIsLoadingC(false);
+      }
+    };
+    fetchData();
+  }, [topicId]);
 
   useEffect(() => {
     textRef.current?.scrollIntoView({
@@ -59,22 +83,54 @@ function Topic() {
   return (
     <TopicContainer>
       <CenterContainer>
-        <HeaderContainer>
-          <h1>{topic.description}</h1>
-          <Text date={topic.createAt} />
-        </HeaderContainer>
+        {isLoadingC ? (
+          <HeaderContainer>
+            <Box sx={{ width: 300, lineHeight: "2rem" }}>
+              <Skeleton />
+              <Skeleton />
+            </Box>
+          </HeaderContainer>
+        ) : (
+          <HeaderContainer>
+            <h1>{topic?.description}</h1>
+            <Text date={topic?.createAt || new Date()} />
+          </HeaderContainer>
+        )}
+
         <CommentContainer>
           <CommentHeader>
             <CommentIcon /> Comments
           </CommentHeader>
           <CommentContent>
-            {comments.length > 0 ? (
+            {isLoadingC ? (
+              <>
+                <Skeleton
+                  style={{ marginTop: "2rem" }}
+                  variant="rounded"
+                  width="100%"
+                  height={80}
+                />
+                <Skeleton
+                  style={{ marginTop: "2rem" }}
+                  variant="rounded"
+                  width="100%"
+                  height={80}
+                />
+                <Skeleton
+                  style={{ marginTop: "2rem" }}
+                  variant="rounded"
+                  width="100%"
+                  height={80}
+                />
+              </>
+            ) : comments.length > 0 ? (
               comments.map((comment, index) => {
                 return <CommentCard key={index} comment={comment} />;
               })
             ) : (
               <div className="noData">No Data</div>
             )}
+
             <div ref={textRef} />
           </CommentContent>
 
