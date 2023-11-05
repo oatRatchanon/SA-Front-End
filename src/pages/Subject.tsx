@@ -115,7 +115,7 @@ function Subject() {
       let fileIds: string[] = [];
       if (user) {
         const res = await getAllBookmark();
-        fileIds = res.fileIds;
+        fileIds = res.fileIds === undefined ? [] : res.fileIds;
       }
       const results = await searchFileService(id);
       let tempfiles = results.fileNames.map((fileName: string) => {
@@ -135,7 +135,9 @@ function Subject() {
   const handleBookmarkFilesChange = async (event: {
     target: HTMLInputElement;
   }) => {
-    const { fileIds } = await getAllBookmark();
+    let { fileIds } = await getAllBookmark();
+    fileIds = fileIds === undefined ? [] : fileIds;
+
     if (event.target.checked && id) {
       const results = await searchFileService(id);
       let tempfiles = results.fileNames.map((fileName: string) => {

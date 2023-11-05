@@ -22,12 +22,13 @@ function FileCard({ file }: FileCardProps) {
 
   const handleStarClick = async () => {
     if (user) {
+      let r = null;
       if (!star) {
-        await createBookmark(file.id);
+        r = await createBookmark(file.id);
       } else if (star) {
-        await deleteBookmark(file.id);
+        r = await deleteBookmark(file.id);
       }
-      setStar(!star);
+      if (r !== null) setStar(!star);
     }
   };
 
