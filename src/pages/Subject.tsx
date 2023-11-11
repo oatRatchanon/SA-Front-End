@@ -110,6 +110,14 @@ function Subject() {
     }
   };
 
+  const isObjectEmpty = (objectName: unknown) => {
+    return (
+      objectName &&
+      Object.keys(objectName).length === 0 &&
+      objectName.constructor === Object
+    );
+  };
+
   const fetchFiles = useCallback(async () => {
     if (id) {
       let fileIds: string[] = [];
@@ -118,16 +126,19 @@ function Subject() {
         fileIds = res.fileIds === undefined ? [] : res.fileIds;
       }
       const results = await searchFileService(id);
-      let tempfiles = results.fileNames.map((fileName: string) => {
-        return { name: fileName };
-      });
-      tempfiles = results.fileIds.map((fileId: string, index: number) => {
-        return {
-          name: tempfiles[index].name,
-          id: fileId,
-          star: fileIds.includes(fileId),
-        };
-      });
+      let tempfiles: File[] = [];
+      if (!isObjectEmpty(results)) {
+        tempfiles = results.fileNames.map((fileName: string) => {
+          return { name: fileName };
+        });
+        tempfiles = results.fileIds.map((fileId: string, index: number) => {
+          return {
+            name: tempfiles[index].name,
+            id: fileId,
+            star: fileIds.includes(fileId),
+          };
+        });
+      }
       setFiles(tempfiles);
     }
   }, [id, user]);
