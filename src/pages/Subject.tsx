@@ -214,8 +214,7 @@ function Subject() {
             </h1>
             <HeaderFooter>
               <h3 style={{ color: "#6b6b6b", marginRight: "1rem" }}>
-                Year : {subject.year} | Semester : {subject.semester} | Section
-                : {subject.sections && subject.sections[0].number}
+                Year : {subject.year} | Semester : {subject.semester}
               </h3>
             </HeaderFooter>
           </HeaderContainer>
